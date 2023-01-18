@@ -3,7 +3,8 @@ NAME  	= philo
 SRC_DIR	= ./src
 INC_DIR	= ./include
 
-SRC		= 	$(SRC_DIR)/control_errors.c \
+SRC		= 	$(SRC_DIR)/ending_program.c \
+			$(SRC_DIR)/initialization.c \
 			$(SRC_DIR)/philo.c \
 			$(SRC_DIR)/utils.c		
 

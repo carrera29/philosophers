@@ -1,6 +1,15 @@
 #include "philo.h"
 
-int	ft_atoi(t_philosopher *philo, const char *str)
+void	write_msg(char *s, int n_philo)
+{
+	struct timeval	curr_time;
+
+	gettimeofday(&curr_time, NULL);
+	printf("%ld Philosopher %d %s\n", (curr_time.tv_sec * 1000) +\
+		(curr_time.tv_usec / 1000), (n_philo+1), s);
+}
+
+int	ft_atoi(const char *str)
 {
 	long long int	s;
 	long long int	r;
@@ -22,9 +31,9 @@ int	ft_atoi(t_philosopher *philo, const char *str)
 		if (str[i] >= 48 && str[i] <= 57)
 			r = (r * 10) + (str[i++] - 48);
 		else
-			(print_error(4), end_program(philo));
+			return (-1);
 		if ((r * s) > 2147483647 || (r * s) < -2147483648)
-			(print_error(4), end_program(philo));
+			return (-1);
 	}
 	return (s * r);
 }
