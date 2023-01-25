@@ -1,29 +1,22 @@
 #include "philo.h"
 
-int	is_philo_dead(t_philosopher *p)
-{
-	struct timeval	curr_time;
-	int				result;
-
-	if (p->data->ntimes_must_eat > 0)
-	{
-		if (p->meals >= p->data->ntimes_must_eat)
-			return (p->data->is_dead = 1, 1);
-	}
-	gettimeofday(&curr_time, NULL);
-	result = (((curr_time.tv_sec * 1000) + (curr_time.tv_usec / 1000)) \
-	- ((p->last_meal.tv_sec * 1000) + (p->last_meal.tv_usec / 1000)));
-	if (result >= (p->data->time_to_die * 1000))
-		return (write_msg("died", p->id), p->data->is_dead = 1, 1);
-	return (0);
-}
-
 void	end_program(t_data *data)
 {
 	if (data->philo[0].id != '\0')
 		(free(data->philo), data->philo = NULL);
 	if (data->mutex != NULL)
 		(free(data->mutex), data->mutex = NULL);
+}
+
+void	p_is_dead(t_data *d, t_philosopher *p)
+{
+	int		i;
+
+	d->is_dead = 1;
+	write_msg("died", p->id);
+	i = 0;
+	while (i < d->philosophers)
+		(d->philo[i].stop = 1, mutex_destroy(&d->philo[i]));
 }
 
 void	print_error(int i)

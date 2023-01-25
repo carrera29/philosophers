@@ -1,5 +1,22 @@
 #include "philo.h"
 
+int	check_okay(t_philosopher *p)
+{
+	pthread_mutex_lock(&p->mutex_checker);
+	if (kitchen_timer(p) == 1)
+	{
+		p->data->is_dead = 1;
+		return (1);
+	}
+	if (p->data->must_eat > 0)
+	{
+		if (p->meals >= p->data->must_eat)
+			return (p->stop = 1, mutex_destroy(p), 1);
+	}
+	pthread_mutex_unlock(&p->mutex_checker);
+	return (0);
+}
+
 int	time_to_eat(t_philosopher *p)
 {
 	t_data	*d;
@@ -9,8 +26,8 @@ int	time_to_eat(t_philosopher *p)
 	write_msg("has taken a fork", p->id);
 	pthread_mutex_lock(&d->mutex[p->right_fork]);
 	write_msg("has taken a fork", p->id);
-	if (is_philo_dead(&d->philo[p->id]) != 0)
-		return (1);
+	// if (check_okay(p) != 0)
+	// 	return (1);
 	gettimeofday(&p->last_meal, NULL);
 	(write_msg("is eating", p->id), p->meals++);
 	usleep(d->time_to_eat * 1000);
@@ -22,26 +39,21 @@ int	time_to_eat(t_philosopher *p)
 void	*philosopher(void *philo)
 {
 	t_philosopher	*p;
-	t_data			*d;
 
 	p = (t_philosopher *)philo;
-	d = p->data;
 	if (p->id % 2 == 1)
-		usleep(1000);
+		usleep(500);
 	write_msg("enter the room", p->id);
-	while (d->is_dead == 0)
+	while (check_okay(p) == 0 && p->data->is_dead == 0)
 	{
+		pthread_mutex_lock(&p->mutex_checker);
 		if (time_to_eat(p) != 0)
-			break ;
-		// pthread_mutex_lock(&d->sleeping);
+			return (0);
 		write_msg("is sleeping", p->id);
-		usleep(d->time_to_sleep * 1000);
-		// pthread_mutex_unlock(&d->sleeping);
-		// pthread_mutex_lock(&d->thinking);
+		usleep(p->data->time_to_sleep * 1000);
 		write_msg("is thinking", p->id);
-		// pthread_mutex_unlock(&d->thinking);
-		if (is_philo_dead(&d->philo[p->id]) != 0)
-			break ;
+		usleep(10000);
+		pthread_mutex_unlock(&p->mutex_checker);
 	}
 	return (0);
 }
@@ -79,7 +91,7 @@ int	set_the_table(t_data *data, char **argv)
 			return (print_error(4), 1);
 	if (argv[5] != '\0')
 	{
-		if ((data->ntimes_must_eat = ft_atoi(argv[5])) <= 0)
+		if ((data->must_eat = ft_atoi(argv[5])) <= 0)
 			return (print_error(4), 1);
 	}
 	data->is_dead = 0;

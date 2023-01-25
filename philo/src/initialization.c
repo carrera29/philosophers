@@ -11,7 +11,10 @@ void	enter_the_room(t_data *data)
 		data->philo[i].left_fork = i;
 		data->philo[i].right_fork = ((i + 1) % data->philosophers);
 		data->philo[i].meals = 0;
+		data->philo[i].stop = 0;
 		data->philo[i].data = data;
+		if (pthread_mutex_init(&data->philo[i].mutex_checker, NULL) != 0)
+			print_error(5);
 		i++;
 	}
 }
@@ -27,8 +30,5 @@ int	mutex_init(t_data *data)
 			return (print_error(5), 1);
 		i++;
 	}
-	if ((pthread_mutex_init(&data->sleeping, NULL) != 0)
-		|| (pthread_mutex_init(&data->thinking, NULL) != 0))
-			return (print_error(5), 1);
 	return (0);
 }
