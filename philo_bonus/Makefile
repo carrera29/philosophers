@@ -5,8 +5,9 @@ INC_DIR	= ./include
 
 SRC		= 	$(SRC_DIR)/ending_program.c \
 			$(SRC_DIR)/initialization.c \
-			$(SRC_DIR)/philo_bonus.c \
-			$(SRC_DIR)/utils.c		
+			$(SRC_DIR)/lunch_time.c \
+			$(SRC_DIR)/main.c \
+			$(SRC_DIR)/utils.c
 
 OBJ 	= 	$(SRC:.c=.o)
 

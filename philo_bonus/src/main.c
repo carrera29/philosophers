@@ -1,35 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ending_program.c                                   :+:      :+:    :+:   */
+/*   philo_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/24 09:34:18 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/01/24 12:13:51 by clcarrer         ###   ########.fr       */
+/*   Created: 2023/01/24 12:17:37 by clcarrer          #+#    #+#             */
+/*   Updated: 2023/01/24 13:01:50 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void	end_program(t_data *data)
+int	main(int argc, char **argv)
 {
-	if (data->philo != '\0')
-		free(data->philo);
-	if (data->sem != '\0')
-		free(data->sem);
-}
+	t_data	data;
 
-void	print_error(int i)
-{
-	if (i == 0)
-		printf("Malloc error\n");
-	else if (i == 1)
-		printf("Wrong number of arguments\n");
-	else if (i == 2)
-		printf("Wrong parameters\n");
-	else if (i == 3)
-		printf("Fork error\n");
-	else if (i == 4)
-		printf("Sempahore error\n");
+	if (argc == 5 || argc == 6)
+	{
+		if (set_the_table(&data, argv) != 0)
+			return (1);
+		if (dollys_clone(&data) != 0)
+			return (2);
+	}
+	else
+		print_error(1);
+	return (0);
 }

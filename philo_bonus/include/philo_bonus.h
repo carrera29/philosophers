@@ -22,9 +22,8 @@
 
 typedef struct s_philosopher
 {
-	int				id_fork;
+	int				pid;
 	int				id;
-	int				fork;
 	int				left_fork;
 	int				right_fork;
 	int				meals;
@@ -48,8 +47,12 @@ typedef struct s_data
 void	end_program(t_data *data);
 void	print_error(int i);
 
-//init
-void	enter_the_room(t_data *data);
+// pen
+void    enter_the_room(t_philosopher *p);
+void    identification(t_philosopher *p);
+void	clone_identification(t_data *data, t_philosopher *p, int i);
+int		dollys_clone(t_data *data);
+
 
 // philo_bonus
 int		set_the_table(t_data *data, char **argv);
