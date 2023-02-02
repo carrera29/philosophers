@@ -14,10 +14,10 @@
 
 void	end_program(t_data *data)
 {
-	if (data->philo != '\0')
+	if (data->philo != NULL)
 		free(data->philo);
-	if (data->sem != '\0')
-		free(data->sem);
+	sem_close(data->fork_one);
+	// sem_close(data->fork_two);
 }
 
 void	print_error(int i)

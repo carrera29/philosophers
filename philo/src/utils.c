@@ -1,5 +1,12 @@
 #include "philo.h"
 
+void	mutex_destroy(t_philosopher *p)
+{
+	pthread_mutex_destroy(&p->data->mutex[p->left_fork]);
+	pthread_mutex_destroy(&p->data->mutex[p->right_fork]);
+	pthread_mutex_destroy(&p->mutex_checker);
+}
+
 int	kitchen_timer(t_philosopher *p)
 {
 	struct timeval	curr_time;
@@ -11,20 +18,9 @@ int	kitchen_timer(t_philosopher *p)
 	curr = ((curr_time.tv_sec * 1000) + (curr_time.tv_usec / 1000));
 	last = ((p->last_meal.tv_sec * 1000) + (p->last_meal.tv_usec / 1000));
 	diff = (curr - last) * 1000;
-	printf("curr time	%ld\n", curr);
-	printf("last time	%ld\n", last);
-	printf("diff time	%d\n", diff);
-	printf("t_to_die	%d\n", (p->data->time_to_die * 1000));
 	if (diff >= (p->data->time_to_die * 1000))
-		return (mutex_destroy(p), p_is_dead(p->data, p), 1);
+		return (1);
 	return (0);
-}
-
-void	mutex_destroy(t_philosopher *p)
-{
-	pthread_mutex_destroy(&p->data->mutex[p->left_fork]);
-	pthread_mutex_destroy(&p->data->mutex[p->right_fork]);
-	pthread_mutex_destroy(&p->mutex_checker);
 }
 
 void	write_msg(char *s, int n_philo)

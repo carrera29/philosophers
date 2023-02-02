@@ -8,17 +8,6 @@ void	end_program(t_data *data)
 		(free(data->mutex), data->mutex = NULL);
 }
 
-void	p_is_dead(t_data *d, t_philosopher *p)
-{
-	int		i;
-
-	d->is_dead = 1;
-	write_msg("died", p->id);
-	i = 0;
-	while (i < d->philosophers)
-		(d->philo[i].stop = 1, mutex_destroy(&d->philo[i]));
-}
-
 void	print_error(int i)
 {
 	if (i == 0)

@@ -4,14 +4,11 @@ int	check_okay(t_philosopher *p)
 {
 	pthread_mutex_lock(&p->mutex_checker);
 	if (kitchen_timer(p) == 1)
-	{
-		p->data->is_dead = 1;
-		return (1);
-	}
+		return (p->data->is_dead = 1, write_msg("died", p->id), 1);
 	if (p->data->must_eat > 0)
 	{
 		if (p->meals >= p->data->must_eat)
-			return (p->stop = 1, mutex_destroy(p), 1);
+			return (p->stop = 1, 1);
 	}
 	pthread_mutex_unlock(&p->mutex_checker);
 	return (0);
@@ -23,11 +20,9 @@ int	time_to_eat(t_philosopher *p)
 
 	d = p->data;
 	pthread_mutex_lock(&d->mutex[p->left_fork]);
-	write_msg("has taken a fork", p->id);
+	write_msg("has taken the left fork", p->id);
 	pthread_mutex_lock(&d->mutex[p->right_fork]);
-	write_msg("has taken a fork", p->id);
-	// if (check_okay(p) != 0)
-	// 	return (1);
+	write_msg("has taken the right fork", p->id);
 	gettimeofday(&p->last_meal, NULL);
 	(write_msg("is eating", p->id), p->meals++);
 	usleep(d->time_to_eat * 1000);
@@ -43,6 +38,7 @@ void	*philosopher(void *philo)
 	p = (t_philosopher *)philo;
 	if (p->id % 2 == 1)
 		usleep(500);
+	gettimeofday(&p->last_meal, NULL);
 	write_msg("enter the room", p->id);
 	while (check_okay(p) == 0 && p->data->is_dead == 0)
 	{
@@ -52,9 +48,9 @@ void	*philosopher(void *philo)
 		write_msg("is sleeping", p->id);
 		usleep(p->data->time_to_sleep * 1000);
 		write_msg("is thinking", p->id);
-		usleep(10000);
 		pthread_mutex_unlock(&p->mutex_checker);
 	}
+	mutex_destroy(p);
 	return (0);
 }
 
@@ -69,7 +65,6 @@ int	enjoy_dinner(t_data *data)
 	{
 		if (pthread_create(&p[i].thread, NULL, &philosopher, &p[i]) != 0)
 			return (print_error(2), end_program(data), 1);
-		gettimeofday(&p[i].last_meal, NULL);
 		i++;
 	}
 	i = 0;
@@ -95,29 +90,11 @@ int	set_the_table(t_data *data, char **argv)
 			return (print_error(4), 1);
 	}
 	data->is_dead = 0;
-	if (!(data->philo = malloc(sizeof(t_philosopher) * data->philosophers)))
-		return (print_error(0), 1);
-	enter_the_room(data);
-	if (!(data->mutex = malloc(sizeof(pthread_mutex_t) * data->philosophers)))
-		return (print_error(5), end_program(data), 1);
+	data->philo = NULL;
+	data->mutex = NULL;
+	if (enter_the_room(data) != 0)
+		return (1);
 	if (mutex_init(data) != 0)
-		return (end_program(data), 1);
-	return (0);
-}
-
-int	main(int argc, char **argv)
-{
-	t_data	data;
-	
-	if (argc == 5 || argc == 6)
-	{
-		if (set_the_table(&data, argv) != 0)
-			return (1);
-		if (enjoy_dinner(&data) != 0)
-			return (1);
-		end_program(&data);
-	}
-	else
-		print_error(1);
+		return (1);
 	return (0);
 }
