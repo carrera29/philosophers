@@ -12,7 +12,7 @@ void	*routine(void *id)
 	printf("you r in the queue\n");
 	sem_wait(semaphore);
 	printf("(%d) log in\n", *(int*)id);
-	sleep(5);
+	sleep(1);
 	printf("(%d) log out\n", *(int*)id);
 	sem_post(semaphore);
 	return (0);
@@ -31,6 +31,8 @@ int	main(void)
 	x = 0;
 	sem_unlink("my_semaphore");
 	if ((semaphore = sem_open("my_semaphore", O_CREAT, 0660, 1)) == (sem_t *)-1)
+		exit(*SEM_FAILED);
+	if ((semaphore = sem_open("my_semaphore", O_CREAT, O_EXCL, 0660, 1)) == (sem_t *)-1)
 		exit(*SEM_FAILED);
 	while (x < 4)
 		(pthread_create(&p[x], NULL, &routine, &i[x]), x++);

@@ -1,30 +1,38 @@
 NAME  	= philo
 
-SRC_DIR	= ./src
+LIB_DIR	= ./libft
 INC_DIR	= ./include
+SRC_DIR	= ./src
+OBJ_DIR	= ./obj
 
-SRC		= 	$(SRC_DIR)/ending_program.c \
-			$(SRC_DIR)/initialization.c \
-			$(SRC_DIR)/philo.c \
-			$(SRC_DIR)/utils.c		
+SRC		= 	ending_program.c \
+			initialization.c \
+			main.c \
+			utils.c
 
-OBJ 	= 	$(SRC:.c=.o)
+OBJ		= 	$(SRC:%.c=$(OBJ_DIR)/%.o)
 
-CFLAGS 	= 	-Wall -Wextra -Werror -I$(INC_DIR)
-
-$(NAME) : $(OBJ)
-	gcc $(CFLAGS) $(OBJ) -o $(NAME)
-
-%.o : /%.c
-	@gcc -c $(CFLAGS) $< -o $@
+CPPFLAGS := $(CPPFLAGS)
+CFLAGS 	= 	-Wall -Wextra -Werror -I$(LIB_DIR) -I$(INC_DIR) 
 
 all : $(NAME)
 
-clean : 
-	@rm -f $(OBJ)
+$(NAME) : $(OBJ)
+	@make -C $(LIB_DIR)
+	@gcc $^ $(CFLAGS) $(LIB_DIR)/libft.a -o $@
 
+$(OBJ) : $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p obj
+	gcc -g -c $(CFLAGS) $< -o $@
+
+clean :
+	@rm -rf $(OBJ)
+	@rm -rf $(OBJ_DIR)
+	@make clean -C $(LIB_DIR)
+	
 fclean : clean
-	@rm -f $(NAME)
+	@rm -rf $(NAME)
+	@make fclean -C $(LIB_DIR)
 
 re : fclean all
 

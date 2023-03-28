@@ -6,7 +6,7 @@
 /*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/24 09:33:18 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/01/24 12:41:07 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/01/26 12:22:21 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,8 @@
 
 typedef struct s_philosopher
 {
-	int				id_fork;
 	int				id;
-	int				fork;
+	int				id_fork;
 	int				left_fork;
 	int				right_fork;
 	int				meals;
@@ -49,12 +48,14 @@ void	end_program(t_data *data);
 void	print_error(int i);
 
 //init
+void	sem_initialization(t_data *data);
 void	enter_the_room(t_data *data);
 
 // philo_bonus
 int		set_the_table(t_data *data, char **argv);
 
 // utils
+char	*ft_itoa(int n);
 void	write_msg(char *s, int n_philo);
 int		ft_atoi(const char *str);
 

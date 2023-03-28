@@ -6,7 +6,7 @@
 /*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/24 09:34:18 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/01/24 12:13:51 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/01/26 14:15:02 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 void	end_program(t_data *data)
 {
-	if (data->philo != '\0')
+	if (data->philo)
 		free(data->philo);
-	if (data->sem != '\0')
+	if (data->sem)
 		free(data->sem);
 }
 
@@ -34,4 +34,8 @@ void	print_error(int i)
 		printf("wrong parameters\n");
 	else if (i == 5)
 		printf("mutex error\n");
+	else if (i == 6)
+		printf("fork error\n");
+	else if (i == 7)
+		printf("sem  error\n");
 }

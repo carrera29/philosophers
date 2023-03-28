@@ -6,11 +6,26 @@
 /*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/24 09:31:06 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/01/24 12:58:53 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/01/26 15:10:54 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
+
+void	sem_initialization(t_data *data)
+{
+	int		i;
+	char	*name;
+
+	i = 0;
+	while (i < data->philosophers)
+	{
+		name = ft_itoa(i);
+		data->sem[i] = (sem_t)sem_open(name, O_CREAT, O_EXCL, 0660, 1);
+		free(name);
+		i++;
+	}
+}
 
 void	enter_the_room(t_data *data)
 {

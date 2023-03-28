@@ -2,21 +2,19 @@
 
 void	end_program(t_data *data)
 {
+	int i;
+
+	i = 0;
+	if (data->mutex != NULL)
+	{
+		while (i < data->philosophers)
+			pthread_mutex_destroy(&data->mutex[i]);
+		(free(data->mutex), data->mutex = NULL);
+	}
 	if (data->philo[0].id != '\0')
 		(free(data->philo), data->philo = NULL);
-	if (data->mutex != NULL)
-		(free(data->mutex), data->mutex = NULL);
-}
-
-void	p_is_dead(t_data *d, t_philosopher *p)
-{
-	int		i;
-
-	d->is_dead = 1;
-	write_msg("died", p->id);
-	i = 0;
-	while (i < d->philosophers)
-		(d->philo[i].stop = 1, mutex_destroy(&d->philo[i]));
+	if (data->print_msg)
+		pthread_mutex_destroy(data->print_msg);
 }
 
 void	print_error(int i)

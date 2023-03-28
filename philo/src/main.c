@@ -2,18 +2,13 @@
 
 int	check_okay(t_philosopher *p)
 {
-	pthread_mutex_lock(&p->mutex_checker);
 	if (kitchen_timer(p) == 1)
-	{
-		p->data->is_dead = 1;
 		return (1);
-	}
 	if (p->data->must_eat > 0)
 	{
 		if (p->meals >= p->data->must_eat)
-			return (p->stop = 1, mutex_destroy(p), 1);
+			return (p->stop = 1, 1);
 	}
-	pthread_mutex_unlock(&p->mutex_checker);
 	return (0);
 }
 
@@ -23,13 +18,17 @@ int	time_to_eat(t_philosopher *p)
 
 	d = p->data;
 	pthread_mutex_lock(&d->mutex[p->left_fork]);
-	write_msg("has taken a fork", p->id);
+	write_msg(p->data, "has taken a fork", p->id);
 	pthread_mutex_lock(&d->mutex[p->right_fork]);
-	write_msg("has taken a fork", p->id);
-	// if (check_okay(p) != 0)
-	// 	return (1);
+	write_msg(p->data, "has taken a fork", p->id);
+	if (check_okay(p) == 1)
+	{
+		pthread_mutex_unlock(&d->mutex[p->left_fork]);
+		pthread_mutex_unlock(&d->mutex[p->right_fork]);
+		return (0);
+	}
 	gettimeofday(&p->last_meal, NULL);
-	(write_msg("is eating", p->id), p->meals++);
+	(write_msg(p->data, "is eating", p->id), p->meals++);
 	usleep(d->time_to_eat * 1000);
 	pthread_mutex_unlock(&d->mutex[p->left_fork]);
 	pthread_mutex_unlock(&d->mutex[p->right_fork]);
@@ -43,17 +42,15 @@ void	*philosopher(void *philo)
 	p = (t_philosopher *)philo;
 	if (p->id % 2 == 1)
 		usleep(500);
-	write_msg("enter the room", p->id);
+	gettimeofday(&p->last_meal, NULL);
+	write_msg(p->data, "enter the room", p->id);
 	while (check_okay(p) == 0 && p->data->is_dead == 0)
 	{
-		pthread_mutex_lock(&p->mutex_checker);
 		if (time_to_eat(p) != 0)
 			return (0);
-		write_msg("is sleeping", p->id);
+		write_msg(p->data, "is sleeping", p->id);
 		usleep(p->data->time_to_sleep * 1000);
-		write_msg("is thinking", p->id);
-		usleep(10000);
-		pthread_mutex_unlock(&p->mutex_checker);
+		write_msg(p->data, "is thinking", p->id);  
 	}
 	return (0);
 }
@@ -69,7 +66,6 @@ int	enjoy_dinner(t_data *data)
 	{
 		if (pthread_create(&p[i].thread, NULL, &philosopher, &p[i]) != 0)
 			return (print_error(2), end_program(data), 1);
-		gettimeofday(&p[i].last_meal, NULL);
 		i++;
 	}
 	i = 0;
@@ -94,12 +90,8 @@ int	set_the_table(t_data *data, char **argv)
 		if ((data->must_eat = ft_atoi(argv[5])) <= 0)
 			return (print_error(4), 1);
 	}
-	data->is_dead = 0;
-	if (!(data->philo = malloc(sizeof(t_philosopher) * data->philosophers)))
-		return (print_error(0), 1);
-	enter_the_room(data);
-	if (!(data->mutex = malloc(sizeof(pthread_mutex_t) * data->philosophers)))
-		return (print_error(5), end_program(data), 1);
+	if (enter_the_room(data) != 0)
+		return (1);
 	if (mutex_init(data) != 0)
 		return (end_program(data), 1);
 	return (0);

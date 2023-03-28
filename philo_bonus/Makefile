@@ -18,7 +18,7 @@ $(NAME) : $(OBJ)
 %.o : /%.c
 	@gcc -c $(CFLAGS) $< -o $@
 
-bonus : $(NAME)
+all : $(NAME)
 
 clean : 
 	@rm -f $(OBJ)
