@@ -1,6 +1,6 @@
 NAME  	= philo
 
-LIB_DIR	= ./libft
+LIB_DIR	= ../libft
 INC_DIR	= ./include
 SRC_DIR	= ./src
 OBJ_DIR	= ./obj
@@ -23,7 +23,7 @@ $(NAME) : $(OBJ)
 
 $(OBJ) : $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p obj
-	gcc -g -c $(CFLAGS) $< -o $@
+	gcc -c $(CFLAGS) $< -o $@
 
 clean :
 	@rm -rf $(OBJ)

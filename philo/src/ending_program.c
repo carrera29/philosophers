@@ -6,7 +6,7 @@
 /*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:38:28 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/04 12:02:13 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/04/04 12:55:53 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,7 @@ void	end_program(t_data *data)
 	}
 	if (data->philo[0].id != '\0')
 		(free(data->philo), data->philo = NULL);
-	if (data->print_msg)
-		pthread_mutex_destroy(data->print_msg);
+	pthread_mutex_destroy(&data->print_msg);
 }
 
 void	print_error(int i)

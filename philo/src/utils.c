@@ -6,7 +6,7 @@
 /*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:40:02 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/04 12:02:33 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/04/04 13:03:54 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ void	mutex_destroy(t_philosopher *p)
 {
 	pthread_mutex_destroy(&p->data->mutex[p->left_fork]);
 	pthread_mutex_destroy(&p->data->mutex[p->right_fork]);
-	pthread_mutex_destroy(&p->mutex_checker);
 }
 
 int	kitchen_timer(t_philosopher *p)
@@ -35,22 +34,16 @@ int	kitchen_timer(t_philosopher *p)
 	return (0);
 }
 
-void	mutex_destroy(t_philosopher *p)
-{
-	pthread_mutex_destroy(&p->data->mutex[p->left_fork]);
-	pthread_mutex_destroy(&p->data->mutex[p->right_fork]);
-}
-
 int	write_msg(t_data *data, char *s, int n_philo)
 {
 	struct timeval	curr_time;
 
-	pthread_mutex_lock(data->print_msg);
+	pthread_mutex_lock(&data->print_msg);
 	gettimeofday(&curr_time, NULL);
 	printf("%ld Philosopher %d %s\n", (curr_time.tv_sec * 1000) +\
 		(curr_time.tv_usec / 1000), (n_philo+1), s);
 	if (ft_strncmp(s, "died", 4) == 0)
 		return (data->is_dead = 1, 1);
-	pthread_mutex_unlock(data->print_msg);
+	pthread_mutex_unlock(&data->print_msg);
 	return (0);
 }
