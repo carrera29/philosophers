@@ -6,11 +6,18 @@
 /*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:40:02 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/04 11:40:04 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/04/04 12:02:33 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	mutex_destroy(t_philosopher *p)
+{
+	pthread_mutex_destroy(&p->data->mutex[p->left_fork]);
+	pthread_mutex_destroy(&p->data->mutex[p->right_fork]);
+	pthread_mutex_destroy(&p->mutex_checker);
+}
 
 int	kitchen_timer(t_philosopher *p)
 {

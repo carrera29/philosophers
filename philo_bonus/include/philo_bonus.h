@@ -6,7 +6,7 @@
 /*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/24 09:33:18 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/01/26 12:22:21 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/04/04 12:04:06 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <semaphore.h>
 # include <fcntl.h>
 # include <sys/time.h>
+# include <signal.h>
 
 typedef struct s_philosopher
 {
@@ -33,13 +34,14 @@ typedef struct s_philosopher
 
 typedef struct s_data
 {
-	sem_t			*sem;
+	sem_t			*fork_one;
+	sem_t			*fork_two;
+	int				stop;
 	int				philosophers;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				must_eat;
-	int				is_dead;
 	t_philosopher	*philo;
 }					t_data;
 
@@ -58,5 +60,6 @@ int		set_the_table(t_data *data, char **argv);
 char	*ft_itoa(int n);
 void	write_msg(char *s, int n_philo);
 int		ft_atoi(const char *str);
+char	*ft_itoa(int n);
 
 #endif
