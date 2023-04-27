@@ -3,14 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   ending_program.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:38:28 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/04 12:55:53 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/04/27 11:41:41 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	mutex_destroy(t_philosopher *p)
+{
+	pthread_mutex_destroy(&p->data->mutex[p->left_fork]);
+	pthread_mutex_destroy(&p->data->mutex[p->right_fork]);
+}
 
 void	end_program(t_data *data)
 {
@@ -23,7 +29,7 @@ void	end_program(t_data *data)
 			pthread_mutex_destroy(&data->mutex[i]);
 		(free(data->mutex), data->mutex = NULL);
 	}
-	if (data->philo[0].id != '\0')
+	if (data->philo)
 		(free(data->philo), data->philo = NULL);
 	pthread_mutex_destroy(&data->print_msg);
 }

@@ -3,20 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:40:02 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/04 13:03:54 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/04/27 10:04:00 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	mutex_destroy(t_philosopher *p)
-{
-	pthread_mutex_destroy(&p->data->mutex[p->left_fork]);
-	pthread_mutex_destroy(&p->data->mutex[p->right_fork]);
-}
 
 int	kitchen_timer(t_philosopher *p)
 {
@@ -46,4 +40,45 @@ int	write_msg(t_data *data, char *s, int n_philo)
 		return (data->is_dead = 1, 1);
 	pthread_mutex_unlock(&data->print_msg);
 	return (0);
+}
+
+int	ft_atoi(const char *str)
+{
+	long long int	s;
+	long long int	r;
+	int				i;
+
+	i = 0;
+	while (str[i] == 32 || (str[i] >= 9 && str[i] <= 13))
+		i++;
+	s = 1;
+	if ((str[i] == '-') || (str[i] == '+'))
+	{
+		if (str[i] == '-')
+			s *= -1;
+		i++;
+	}
+	r = 0;
+	while (str[i])
+	{
+		if (str[i] >= 48 && str[i] <= 57)
+			r = (r * 10) + (str[i++] - 48);
+		else
+			return (write(1, "Error\n", 6));
+		if ((r * s) > 2147483647 || (r * s) < -2147483648)
+			return (write(1, "Error\n", 6));
+	}
+	return (s * r);
+}
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	unsigned int	i;
+
+	i = 0;
+	if (n == 0)
+		return (0);
+	while (s1[i] && s1[i] == s2[i] && i < ((unsigned int)n - 1))
+		i++;
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }

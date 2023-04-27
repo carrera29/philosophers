@@ -3,48 +3,68 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:39:52 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/04 13:03:03 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/04/27 12:55:47 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	check_okay(t_philosopher *p)
+int	all_philosophers_finished(t_data *data)
 {
-	if (kitchen_timer(p) == 1)
-		return (1);
-	if (p->data->must_eat > 0)
+	int i;
+
+	i = -1;
+	while (++i < data->philosophers)
 	{
-		if (p->meals >= p->data->must_eat)
-			return (p->stop = 1, 1);
+		if (!data->philo[i].stop)
+			return (0);
+	}
+	write_msg(data, "everyone has eaten enough", -1);
+	return (1);
+}
+
+
+int	big_brother(t_data *data)
+{
+	int				i;
+	t_philosopher	*p;
+
+	usleep(500);
+	while (1)
+	{
+		i = -1;
+		while (++i < data->philosophers)
+		{
+			usleep(100);
+			p = &(data->philo[i]);
+			if (kitchen_timer(p) == 1 || data->is_dead)
+				return (1);
+			if (data->must_eat)
+				if (p->meals >= data->must_eat)
+					return (p->stop = 1);
+			if (all_philosophers_finished(data))
+				return (0);
+		}
 	}
 	return (0);
 }
 
-int	time_to_eat(t_philosopher *p)
+void	time_to_eat(t_philosopher *p)
 {
 	t_data	*d;
 
 	d = p->data;
 	pthread_mutex_lock(&d->mutex[p->left_fork]);
-	write_msg(p->data, "has taken a fork", p->id);
 	pthread_mutex_lock(&d->mutex[p->right_fork]);
 	write_msg(p->data, "has taken a fork", p->id);
-	if (check_okay(p) == 1)
-	{
-		pthread_mutex_unlock(&d->mutex[p->left_fork]);
-		pthread_mutex_unlock(&d->mutex[p->right_fork]);
-		return (1);
-	}
 	gettimeofday(&p->last_meal, NULL);
 	(write_msg(p->data, "is eating", p->id), p->meals++);
 	usleep(d->time_to_eat * 1000);
 	pthread_mutex_unlock(&d->mutex[p->left_fork]);
 	pthread_mutex_unlock(&d->mutex[p->right_fork]);
-	return (0);
 }
 
 void	*philosopher(void *philo)
@@ -56,10 +76,9 @@ void	*philosopher(void *philo)
 		usleep(500);
 	gettimeofday(&p->last_meal, NULL);
 	write_msg(p->data, "enter the room", p->id);
-	while (check_okay(p) == 0 && p->data->is_dead == 0)
+	while (!p->data->is_dead || !p->stop)
 	{
-		if (time_to_eat(p) != 0)
-			return (0);
+		time_to_eat(p);
 		write_msg(p->data, "is sleeping", p->id);
 		usleep(p->data->time_to_sleep * 1000);
 		write_msg(p->data, "is thinking", p->id);  
@@ -74,38 +93,11 @@ int	enjoy_dinner(t_data *data)
 	t_philosopher	*p;
 
 	p = data->philo;
-	i = 0;
-	while (i < data->philosophers)
-	{
+	i = -1;
+	while (++i < data->philosophers)
 		if (pthread_create(&p[i].thread, NULL, &philosopher, &p[i]) != 0)
 			return (print_error(2), end_program(data), 1);
-		i++;
-	}
-	i = 0;
-	while (i < data->philosophers)
-	{
-		if (pthread_join(p[i].thread, NULL) != 0)
-			return (print_error(3), end_program(data), 1);
-		i++;
-	}
-	return (0);
-}
-
-int	set_the_table(t_data *data, char **argv)
-{
-	if ((data->philosophers = ft_atoi(argv[1])) < 2 \
-		|| (data->time_to_die = ft_atoi(argv[2])) <= 0 \
-		|| (data->time_to_eat = ft_atoi(argv[3])) < 0 \
-		|| (data->time_to_sleep = ft_atoi(argv[4])) < 0)
-			return (print_error(4), 1);
-	if (argv[5] != '\0')
-	{
-		if ((data->must_eat = ft_atoi(argv[5])) <= 0)
-			return (print_error(4), 1);
-	}
-	ft_memset(data, 0, 1);
-	if (enter_the_room(data) != 0)
-		return (1);
+	big_brother(data);
 	return (0);
 }
 
