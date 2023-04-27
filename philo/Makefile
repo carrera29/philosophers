@@ -1,6 +1,5 @@
 NAME  	= philo
 
-LIB_DIR	= ../libft
 INC_DIR	= ./include
 SRC_DIR	= ./src
 OBJ_DIR	= ./obj
@@ -13,13 +12,12 @@ SRC		= 	ending_program.c \
 OBJ		= 	$(SRC:%.c=$(OBJ_DIR)/%.o)
 
 CPPFLAGS := $(CPPFLAGS)
-CFLAGS 	= 	-Wall -Wextra -Werror -I$(LIB_DIR) -I$(INC_DIR) 
+CFLAGS 	= 	-Wall -Wextra -Werror -I$(INC_DIR) 
 
 all : $(NAME)
 
 $(NAME) : $(OBJ)
-	@make -C $(LIB_DIR)
-	@gcc $^ $(CFLAGS) $(LIB_DIR)/libft.a -o $@
+	@gcc $^ $(CFLAGS) -o $@
 
 $(OBJ) : $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p obj
@@ -28,11 +26,9 @@ $(OBJ) : $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 clean :
 	@rm -rf $(OBJ)
 	@rm -rf $(OBJ_DIR)
-	@make clean -C $(LIB_DIR)
 	
 fclean : clean
 	@rm -rf $(NAME)
-	@make fclean -C $(LIB_DIR)
 
 re : fclean all
 

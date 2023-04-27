@@ -2,7 +2,6 @@
 #ifndef PHILO_H
 # define PHILO_H
 
-# include "../../libft/libft.h"
 # include <pthread.h>
 # include <stdio.h>
 # include <unistd.h>
@@ -41,6 +40,9 @@ int		enter_the_room(t_data *data);
 int		kitchen_timer(t_philosopher *p);
 void	mutex_destroy(t_philosopher *p);
 int		write_msg(t_data *data, char *s, int n_philo);
+int		ft_atoi(const char *str);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
+void	*ft_memset(void	*b, int c, size_t len);
 
 // ending_program
 void	end_program(t_data *data);

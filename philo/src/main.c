@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:39:52 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/04 13:03:03 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/04/27 13:50:52 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int	set_the_table(t_data *data, char **argv)
 		|| (data->time_to_eat = ft_atoi(argv[3])) < 0 \
 		|| (data->time_to_sleep = ft_atoi(argv[4])) < 0)
 			return (print_error(4), 1);
-	if (argv[5] != '\0')
+	if (argv[5])
 	{
 		if ((data->must_eat = ft_atoi(argv[5])) <= 0)
 			return (print_error(4), 1);
