@@ -6,7 +6,7 @@
 /*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:38:28 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/27 11:41:41 by pollo            ###   ########.fr       */
+/*   Updated: 2023/04/27 17:48:04 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	end_program(t_data *data)
 	int i;
 
 	i = 0;
-	if (data->mutex != NULL)
+	if (data->mutex)
 	{
 		while (i < data->philosophers)
 			pthread_mutex_destroy(&data->mutex[i]);

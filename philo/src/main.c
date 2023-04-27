@@ -6,26 +6,11 @@
 /*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:39:52 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/27 15:59:05 by pollo            ###   ########.fr       */
+/*   Updated: 2023/04/27 18:03:52 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int	all_philosophers_finished(t_data *data)
-{
-	int i;
-
-	i = -1;
-	while (++i < data->philosophers)
-	{
-		if (!data->philo[i].stop)
-			return (0);
-	}
-	write_msg(data, "everyone has eaten enough", -1);
-	return (1);
-}
-
 
 int	big_brother(t_data *data)
 {
@@ -44,9 +29,7 @@ int	big_brother(t_data *data)
 				return (1);
 			if (data->must_eat)
 				if (p->meals >= data->must_eat)
-					return (p->stop = 1);
-			if (all_philosophers_finished(data))
-				return (0);
+					p->stop = 1;
 		}
 	}
 	return (0);
@@ -107,6 +90,7 @@ int	main(int argc, char **argv)
 
 	if (argc == 5 || argc == 6)
 	{
+		memset(&data, 0, sizeof(data));
 		if (set_the_table(&data, argv) != 0)
 			return (1);
 		if (enjoy_dinner(&data) != 0)

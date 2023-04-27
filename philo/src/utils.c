@@ -6,7 +6,7 @@
 /*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:40:02 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/27 10:04:00 by pollo            ###   ########.fr       */
+/*   Updated: 2023/04/27 18:01:19 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	write_msg(t_data *data, char *s, int n_philo)
 	gettimeofday(&curr_time, NULL);
 	printf("%ld Philosopher %d %s\n", (curr_time.tv_sec * 1000) +\
 		(curr_time.tv_usec / 1000), (n_philo+1), s);
-	if (ft_strncmp(s, "died", 4) == 0)
+	if (s[0] == 'd')
 		return (data->is_dead = 1, 1);
 	pthread_mutex_unlock(&data->print_msg);
 	return (0);
@@ -69,16 +69,4 @@ int	ft_atoi(const char *str)
 			return (write(1, "Error\n", 6));
 	}
 	return (s * r);
-}
-
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
-{
-	unsigned int	i;
-
-	i = 0;
-	if (n == 0)
-		return (0);
-	while (s1[i] && s1[i] == s2[i] && i < ((unsigned int)n - 1))
-		i++;
-	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
