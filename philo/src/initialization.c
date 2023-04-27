@@ -6,7 +6,7 @@
 /*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:39:39 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/27 11:39:00 by pollo            ###   ########.fr       */
+/*   Updated: 2023/04/27 15:55:39 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,9 @@ int	set_the_table(t_data *data, char **argv)
 		|| (data->time_to_sleep = ft_atoi(argv[4])) < 0)
 			return (print_error(4), 1);
 	if (argv[5])
-	{
 		if ((data->must_eat = ft_atoi(argv[5])) <= 0)
 			return (print_error(4), 1);
-	}
+	data->is_dead = 0;
 	if (enter_the_room(data) != 0)
 		return (1);
 	return (0);
