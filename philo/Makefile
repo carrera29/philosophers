@@ -18,7 +18,7 @@ all : $(NAME)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(OBJ_DIR)
-	gcc -c $(CFLAGS) $< -o $@
+	gcc -c -g $(CFLAGS) $< -o $@
 
 $(NAME): $(OBJ)
 	@gcc $(OBJ) -o $@

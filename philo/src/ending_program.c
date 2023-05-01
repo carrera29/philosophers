@@ -6,17 +6,11 @@
 /*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:38:28 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/27 17:48:04 by pollo            ###   ########.fr       */
+/*   Updated: 2023/04/28 11:42:16 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	mutex_destroy(t_philosopher *p)
-{
-	pthread_mutex_destroy(&p->data->mutex[p->left_fork]);
-	pthread_mutex_destroy(&p->data->mutex[p->right_fork]);
-}
 
 void	end_program(t_data *data)
 {

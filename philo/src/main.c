@@ -6,7 +6,7 @@
 /*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:39:52 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/27 18:03:52 by pollo            ###   ########.fr       */
+/*   Updated: 2023/05/01 10:20:37 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,13 @@ int	big_brother(t_data *data)
 			usleep(100);
 			p = &(data->philo[i]);
 			if (kitchen_timer(p) == 1 || data->is_dead)
-				return (1);
+				return (0);
 			if (data->must_eat)
 				if (p->meals >= data->must_eat)
 					p->stop = 1;
 		}
 	}
+	end_program(data);
 	return (0);
 }
 
@@ -59,15 +60,14 @@ void	*philosopher(void *philo)
 		usleep(500);
 	gettimeofday(&p->last_meal, NULL);
 	write_msg(p->data, "enter the room", p->id);
-	while (!p->data->is_dead || !p->stop)
+	while (!p->data->is_dead && !p->stop)
 	{
 		time_to_eat(p);
 		write_msg(p->data, "is sleeping", p->id);
 		usleep(p->data->time_to_sleep * 1000);
 		write_msg(p->data, "is thinking", p->id);  
 	}
-	mutex_destroy(p);
-	return (0);
+	exit (0);
 }
 
 int	enjoy_dinner(t_data *data)
