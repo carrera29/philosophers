@@ -12,7 +12,7 @@ SRC		= 	ending_program.c \
 OBJ		= 	$(SRC:%.c=$(OBJ_DIR)/%.o)
 
 CPPFLAGS := $(CPPFLAGS)
-CFLAGS 	= 	-Wall -Wextra -Werror -I$(INC_DIR)
+CFLAGS 	= 	-Wall -Wextra -Werror -I $(INC_DIR)
 
 all : $(NAME)
 
@@ -21,7 +21,10 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	gcc -c $(CFLAGS) $< -o $@
 
 $(NAME): $(OBJ)
-	@gcc $(OBJ) -o $@
+	@gcc $(OBJ) -lm -o $@
+
+debug: CFLAGS += -g
+debug: re
 
 clean :
 	@rm -rf $(OBJ)
