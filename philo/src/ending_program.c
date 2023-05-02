@@ -6,7 +6,7 @@
 /*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:38:28 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/28 11:42:16 by pollo            ###   ########.fr       */
+/*   Updated: 2023/05/02 10:55:38 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,20 +26,4 @@ void	end_program(t_data *data)
 	if (data->philo)
 		(free(data->philo), data->philo = NULL);
 	pthread_mutex_destroy(&data->print_msg);
-}
-
-void	print_error(int i)
-{
-	if (i == 0)
-		printf("Malloc error\n");
-	else if (i == 1)
-		printf("Wrong number of arguments\n");
-	else if (i == 2)
-		printf("error with thread creation\n");
-	else if (i == 3)
-		printf("error with thread join\n");
-	else if (i == 4)
-		printf("wrong parameters\n");
-	else if (i == 5)
-		printf("mutex error\n");
 }

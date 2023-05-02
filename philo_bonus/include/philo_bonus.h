@@ -44,11 +44,11 @@ int		enjoy_dinner(t_data *data);
 // utils
 void	write_msg(t_data *data, char *s, int n_philo);
 int		kitchen_timer(t_philosopher *p, t_data *data);
+int		error_check(t_data *data, char *fnc, int code);
 int		ft_atoi(const char *str);
 char	*ft_itoa(int n);
 
 // ending_program
 void	end_program(t_data *data);
-void	print_error(int i);
 
 #endif

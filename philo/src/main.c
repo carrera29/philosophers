@@ -6,7 +6,7 @@
 /*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:39:52 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/01 11:08:02 by pollo            ###   ########.fr       */
+/*   Updated: 2023/05/02 11:21:15 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ void	*philosopher(void *philo)
 	if (p->id % 2 == 1)
 		usleep(500);
 	gettimeofday(&p->last_meal, NULL);
-	write_msg(p->data, "enter the room", p->id);
 	while (!p->data->is_dead && !p->stop)
 	{
 		time_to_eat(p);
@@ -78,8 +77,9 @@ int	enjoy_dinner(t_data *data)
 	p = data->philo;
 	i = -1;
 	while (++i < data->philosophers)
-		if (pthread_create(&p[i].thread, NULL, &philosopher, &p[i]) != 0)
-			return (print_error(2), end_program(data), 1);
+		if (error_check(data, "pthread create",\
+			pthread_create(&p[i].thread, NULL, &philosopher, &p[i])) != 0)
+				return (1);
 	big_brother(data);
 	return (0);
 }
@@ -97,6 +97,6 @@ int	main(int argc, char **argv)
 			return (2);
 	}
 	else
-		print_error(1);
+		printf("Error: wrong number of arguments\n");
 	return (0);
 }

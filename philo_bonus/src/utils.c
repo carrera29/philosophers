@@ -6,7 +6,7 @@
 /*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/24 09:36:28 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/01 20:21:24 by pollo            ###   ########.fr       */
+/*   Updated: 2023/05/02 13:14:17 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ void	write_msg(t_data *data, char *s, int n_philo)
 		(curr_time.tv_usec / 1000), (n_philo + 1), s);
 	if (s[0] == 'd')
 		return ;
-	sem_post(data->print_msg);
+	else
+		sem_post(data->print_msg);
 }
 
 int	kitchen_timer(t_philosopher *p, t_data *data)
@@ -39,6 +40,13 @@ int	kitchen_timer(t_philosopher *p, t_data *data)
 	if (diff >= (p->data->time_to_die * 1000))
 		return (write_msg(data, "died", p->id), data->is_dead = 1, 1);
 	return (0);
+}
+
+int	error_check(t_data *data, char *fnc, int code)
+{
+	if (code < 0)
+		(printf ("Error: %s\n", fnc), end_program(data));
+	return (code);
 }
 
 int	ft_atoi(const char *str)

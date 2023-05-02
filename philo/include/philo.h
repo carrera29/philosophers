@@ -41,12 +41,10 @@ int		enjoy_dinner(t_data *data);
 // utils
 int		kitchen_timer(t_philosopher *p);
 int		write_msg(t_data *data, char *s, int n_philo);
+int		error_check(t_data *data, char *fnc, int code);
 int		ft_atoi(const char *str);
-int		ft_strncmp(const char *s1, const char *s2, size_t n);
 
 // ending_program
-void	mutex_destroy(t_philosopher *p);
 void	end_program(t_data *data);
-void	print_error(int i);
 
 #endif

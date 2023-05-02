@@ -6,7 +6,7 @@
 /*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:40:02 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/27 18:01:19 by pollo            ###   ########.fr       */
+/*   Updated: 2023/05/02 11:18:00 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,13 @@ int	write_msg(t_data *data, char *s, int n_philo)
 		return (data->is_dead = 1, 1);
 	pthread_mutex_unlock(&data->print_msg);
 	return (0);
+}
+
+int	error_check(t_data *data, char *fnc, int code)
+{
+	if (code < 0)
+		(printf("Error: %s\n", fnc), end_program(data));
+	return (code);
 }
 
 int	ft_atoi(const char *str)
