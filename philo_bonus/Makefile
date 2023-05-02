@@ -1,31 +1,37 @@
 NAME  	= philo_bonus
 
-SRC_DIR	= ./src
 INC_DIR	= ./include
+SRC_DIR	= ./src
+OBJ_DIR	= ./obj
 
-SRC		= 	$(SRC_DIR)/ending_program.c \
-			$(SRC_DIR)/initialization.c \
-			$(SRC_DIR)/lunch_time.c \
-			$(SRC_DIR)/main.c \
-			$(SRC_DIR)/utils.c
+SRC		= 	ending_program.c \
+			initialization.c \
+			main.c \
+			utils.c
 
-OBJ 	= 	$(SRC:.c=.o)
+OBJ		= 	$(SRC:%.c=$(OBJ_DIR)/%.o)
 
-CFLAGS 	= 	-Wall -Wextra -Werror -I$(INC_DIR)
-
-$(NAME) : $(OBJ)
-	gcc $(CFLAGS) $(OBJ) -o $(NAME)
-
-%.o : /%.c
-	@gcc -c $(CFLAGS) $< -o $@
+CPPFLAGS := $(CPPFLAGS)
+CFLAGS 	= 	-Wall -Wextra -Werror -I $(INC_DIR)
 
 all : $(NAME)
 
-clean : 
-	@rm -f $(OBJ)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(OBJ_DIR)
+	gcc -c $(CFLAGS) $< -o $@
 
+$(NAME): $(OBJ)
+	@gcc $(OBJ) -lm -o $@
+
+debug: CFLAGS += -g
+debug: re
+
+clean :
+	@rm -rf $(OBJ)
+	@rm -rf $(OBJ_DIR)
+	
 fclean : clean
-	@rm -f $(NAME)
+	@rm -rf $(NAME)
 
 re : fclean all
 

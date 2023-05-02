@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ending_program.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/24 09:34:18 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/04/04 12:03:55 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/05/01 20:22:30 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,20 @@
 
 void	end_program(t_data *data)
 {
-	if (data->philo)
-		free(data->philo);
+	int		i;
+
 	if (data->sem)
+	{
+		i = -1;
+		while (++i < data->philosophers)
+			sem_close(data->sem[i]);
 		free(data->sem);
+	}
+	if (data->print_msg)
+		sem_close(data->print_msg);
+	if (data->philo)
+		(free(data->philo), data->philo = NULL);
+	
 }
 
 void	print_error(int i)
@@ -31,11 +41,11 @@ void	print_error(int i)
 	else if (i == 3)
 		printf("Fork error\n");
 	else if (i == 4)
-		printf("wrong parameters\n");
+		printf("Wrong parameters\n");
 	else if (i == 5)
-		printf("mutex error\n");
+		printf("Mutex error\n");
 	else if (i == 6)
-		printf("fork error\n");
+		printf("Fork error\n");
 	else if (i == 7)
-		printf("sem  error\n");
+		printf("Sem error\n");
 }
