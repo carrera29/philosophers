@@ -6,63 +6,89 @@
 /*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/24 12:17:37 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/02 13:21:54 by pollo            ###   ########.fr       */
+/*   Updated: 2023/05/04 12:11:19 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-int	time_to_eat(t_philosopher *p, t_data *data)
+void	*monitoring(void *args)
 {
-	sem_wait(data->sem[p->left_fork]);
-	sem_wait(data->sem[p->right_fork]);
-	write_msg(data, "has taken a fork", p->id);
-	if (kitchen_timer(p, data) != 0)
-		return (1);
-	(write_msg(data, "is eating", p->id), p->meals++); 
-	gettimeofday(&p->last_meal, NULL);
-	usleep(data->time_to_eat * 1000);
-	sem_post(data->sem[p->left_fork]);
-	sem_post(data->sem[p->right_fork]);
-	return (0);
+	t_data	*data;
+
+	data = (t_data *)args;
+	usleep(500);
+	while (1)
+	{
+		usleep(100);
+		if (kitchen_timer(data) == 1)
+		{
+			data->is_dead = 1;
+			write_msg(data, "died", data->id);
+			exit (1);
+		}
+		if (data->must_eat && data->meals >= data->must_eat)
+			exit (0);
+	}
 }
 
-void	time_for_lunch(t_philosopher *p, t_data *data)
+void	time_to_eat(t_data *data)
 {
-	if (p->id % 2 == 1)
+	sem_wait(data->forks);
+	write_msg(data, "has taken a fork", data->id);
+	sem_wait(data->forks);
+	write_msg(data, "has taken a fork", data->id);
+	(write_msg(data, "is eating", data->id), data->meals++); 
+	gettimeofday(&data->last_meal, NULL);
+	usleep(data->time_to_eat * 1000);
+	(sem_post(data->forks), sem_post(data->forks));
+}
+
+int	time_for_lunch(t_data *data)
+{
+	pthread_t		thread;
+
+	if (data->id % 2 == 1)
 		usleep(500);
-	gettimeofday(&p->last_meal, NULL);
-	while (!data->is_dead && !p->stop)
+	if (pthread_create(&thread, NULL, &monitoring, &data) != 0)
+		return (printf("Error: pthread create\n"), 1);
+	gettimeofday(&data->last_meal, NULL);
+	while (1)
 	{
-		if (data->must_eat)
-			if (p->meals >= data->must_eat)
-				exit (0);
-		if (time_to_eat(p, data) == 1)
-			break ;
-		write_msg(data, "is sleeping", p->id);
+		time_to_eat(data);
+		write_msg(data, "is sleeping", data->id);
 		usleep(data->time_to_sleep * 1000);
-		write_msg(data, "is thinking", p->id);
+		write_msg(data, "is thinking", data->id);
 	}
-	exit (1);
 }
 
 int	enjoy_dinner(t_data *data)
 {
 	int		i;
-	pid_t	pid;
+	int		status;
+	pid_t	*pid;
 
+	pid = malloc(sizeof(pid_t) * data->philosophers);
+	if (!pid)
+		return (printf("Error: malloc\n"), end_program(data), 1);
 	i = -1;
 	while (++i < data->philosophers)
 	{
-		if (error_check(data, "fork", pid = fork()) < 0)
-			return (1);
-		else if (pid == 0)
-			(enter_the_room(data, &data->philo[i], i), \
-				time_for_lunch(&data->philo[i], data));
+		pid[i] = fork();
+		if (pid[i] == -1)
+			return (printf("Error: fork\n"), end_program(data), 1);
+		else if (!pid[i])
+			(data->id = i, time_for_lunch(data));
 	}
-	while ((pid = waitpid(-1, &data->status, 0)) > 0)
-		if (WIFEXITED(data->status) && WEXITSTATUS(data->status) != 0)
-			return (end_program(data), 1);
+	while (1)
+	{
+		waitpid(-1, &status, 0);
+		if (WEXITSTATUS(status) != 0)
+		{
+			kill_the_chld(data, pid);
+			break ;
+		}
+	}
 	return (0);
 }
 
