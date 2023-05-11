@@ -4,8 +4,7 @@ INC_DIR	= ./include
 SRC_DIR	= ./src
 OBJ_DIR	= ./obj
 
-SRC		= 	ending_program.c \
-			initialization.c \
+SRC		=	initialization.c \
 			main.c \
 			utils.c
 
