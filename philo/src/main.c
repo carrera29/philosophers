@@ -6,7 +6,7 @@
 /*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:39:52 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/11 12:53:21 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/05/11 14:34:47 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	big_brother(t_data *data)
 			usleep(100);
 			p = &(data->philo[i]);
 			if (kitchen_timer(p) == 1 || data->is_dead)
-				return (0);
+				return (data->is_dead = 1, 0);
 			if (data->must_eat)
 				if (p->meals >= data->must_eat)
 					p->stop = 1;
