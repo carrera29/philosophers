@@ -6,7 +6,7 @@
 /*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:39:52 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/11 14:34:47 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/05/11 16:11:53 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,11 @@ void	time_to_eat(t_philosopher *p)
 
 	d = p->data;
 	pthread_mutex_lock(&d->mutex[p->left_fork]);
+	write_msg(p->data, "has taken the left fork", p->id);
 	pthread_mutex_lock(&d->mutex[p->right_fork]);
-	write_msg(p->data, "has taken a fork", p->id);
-	gettimeofday(&p->last_meal, NULL);
+	write_msg(p->data, "has taken the right fork", p->id);
 	(write_msg(p->data, "is eating", p->id), p->meals++);
+	p->last_meal = timer_catch();
 	usleep(d->time_to_eat * 1000);
 	pthread_mutex_unlock(&d->mutex[p->left_fork]);
 	pthread_mutex_unlock(&d->mutex[p->right_fork]);
@@ -57,7 +58,7 @@ void	*philosopher(void *philo)
 	p = (t_philosopher *)philo;
 	if (p->id % 2 == 1)
 		usleep(500);
-	gettimeofday(&p->last_meal, NULL);
+	p->last_meal = timer_catch();
 	while (!p->data->is_dead && !p->stop)
 	{
 		time_to_eat(p);
@@ -74,6 +75,7 @@ void	enjoy_dinner(t_data *data)
 	t_philosopher	*p;
 
 	p = data->philo;
+	data->first_time = timer_catch();
 	i = -1;
 	while (++i < data->philosophers)
 		if (error_check(data, "pthread create", \

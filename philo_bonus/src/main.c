@@ -6,7 +6,7 @@
 /*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/24 12:17:37 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/11 12:55:34 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/05/11 16:08:47 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	time_to_eat(t_philo *philo)
 	if (kitchen_timer(philo->data, philo) != 0)
 		return (1);
 	(write_msg(philo->data, "is eating", philo->id), philo->meals += 1);
-	gettimeofday(&philo->last_meal, NULL);
+	philo->last_meal = timer_catch();
 	usleep(philo->data->time_to_eat * 1000);
 	sem_post(philo->data->forks);
 	sem_post(philo->data->forks);
@@ -32,7 +32,7 @@ void	time_for_lunch(t_data *data, t_philo *philo)
 {
 	if (philo->id % 2 == 1)
 		usleep(500);
-	gettimeofday(&philo->last_meal, NULL);
+	philo->last_meal = timer_catch();
 	while (1)
 	{
 		if (philo->data->must_eat)
@@ -53,6 +53,7 @@ int	enjoy_dinner(t_data *data, t_philo *philo)
 	int	status;
 
 	i = -1;
+	data->first_time = timer_catch();
 	while (++i < data->philosophers)
 	{
 		philo[i].pid = fork();

@@ -6,7 +6,7 @@
 /*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/10 11:29:20 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/11 12:29:34 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/05/11 15:47:37 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ typedef struct s_philo
 	int				id;
 	int				meals;
 	pid_t			pid;
-	struct timeval	last_meal;
+	long			last_meal;
 	struct s_data	*data;
 }					t_philo;
 
@@ -41,6 +41,7 @@ typedef struct s_data
 	int				time_to_sleep;
 	int				must_eat;
 	int				status;
+	long			first_time;
 	t_philo			*philo;
 }					t_data;
 
@@ -48,11 +49,12 @@ typedef struct s_data
 int		sem_initialization(t_data *data);
 t_philo	*philo_init(t_data *data, t_philo *philo);
 int		set_the_table(t_data *data, char **argv);
+int		error_check(t_data *data, char *fnc, int code);
 
 // utils
+long	timer_catch(void);
 void	write_msg(t_data *data, char *s, int n_philo);
 int		kitchen_timer(t_data *data, t_philo *philo);
-int		error_check(t_data *data, char *fnc, int code);
 int		ft_atoi(const char *str);
 
 // ending_program

@@ -6,20 +6,27 @@
 /*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/24 09:36:28 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/11 12:11:02 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/05/11 15:47:41 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void	write_msg(t_data *data, char *s, int n_philo)
+long	timer_catch(void)
 {
 	struct timeval	curr_time;
 
-	sem_wait(data->printer);
 	gettimeofday(&curr_time, NULL);
-	printf("%ld Philosopher %d %s\n", (curr_time.tv_sec * 1000) + \
-		(curr_time.tv_usec / 1000), (n_philo + 1), s);
+	return (curr_time.tv_sec * 1000 + curr_time.tv_usec / 1000);
+}
+
+void	write_msg(t_data *data, char *s, int n_philo)
+{
+	long	curr_time;
+
+	sem_wait(data->printer);
+	curr_time = (timer_catch() - data->first_time);
+	printf("%ld Philosopher %d %s\n", curr_time, (n_philo + 1), s);
 	if (s[0] == 'd')
 		return ;
 	else
@@ -28,26 +35,14 @@ void	write_msg(t_data *data, char *s, int n_philo)
 
 int	kitchen_timer(t_data *data, t_philo *philo)
 {
-	struct timeval	curr_time;
-	int				diff;
-	long			curr;
-	long			last;
+	long	curr_time;
+	long	diff;
 
-	gettimeofday(&curr_time, NULL);
-	curr = ((curr_time.tv_sec * 1000) + (curr_time.tv_usec / 1000));
-	last = ((philo->last_meal.tv_sec * 1000) \
-		+ (philo->last_meal.tv_usec / 1000));
-	diff = (curr - last) * 1000;
+	curr_time = timer_catch();
+	diff = (curr_time - philo->last_meal) * 1000;
 	if (diff >= (data->time_to_die * 1000))
 		return (write_msg(data, "died", philo->id), 1);
 	return (0);
-}
-
-int	error_check(t_data *data, char *fnc, int code)
-{
-	if (code < 0)
-		(printf ("Error: %s\n", fnc), end_program(data));
-	return (code);
 }
 
 int	ft_atoi(const char *str)
