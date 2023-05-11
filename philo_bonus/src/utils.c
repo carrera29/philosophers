@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/24 09:36:28 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/04 11:38:27 by pollo            ###   ########.fr       */
+/*   Updated: 2023/05/11 12:11:02 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,15 @@ void	write_msg(t_data *data, char *s, int n_philo)
 
 	sem_wait(data->printer);
 	gettimeofday(&curr_time, NULL);
-	printf("%ld Philosopher %d %s\n", (curr_time.tv_sec * 1000) +\
+	printf("%ld Philosopher %d %s\n", (curr_time.tv_sec * 1000) + \
 		(curr_time.tv_usec / 1000), (n_philo + 1), s);
 	if (s[0] == 'd')
 		return ;
-	sem_post(data->printer);
+	else
+		sem_post(data->printer);
 }
 
-int	kitchen_timer(t_data *data)
+int	kitchen_timer(t_data *data, t_philo *philo)
 {
 	struct timeval	curr_time;
 	int				diff;
@@ -34,11 +35,19 @@ int	kitchen_timer(t_data *data)
 
 	gettimeofday(&curr_time, NULL);
 	curr = ((curr_time.tv_sec * 1000) + (curr_time.tv_usec / 1000));
-	last = ((data->last_meal.tv_sec * 1000) + (data->last_meal.tv_usec / 1000));
+	last = ((philo->last_meal.tv_sec * 1000) \
+		+ (philo->last_meal.tv_usec / 1000));
 	diff = (curr - last) * 1000;
 	if (diff >= (data->time_to_die * 1000))
-		return (1);
+		return (write_msg(data, "died", philo->id), 1);
 	return (0);
+}
+
+int	error_check(t_data *data, char *fnc, int code)
+{
+	if (code < 0)
+		(printf ("Error: %s\n", fnc), end_program(data));
+	return (code);
 }
 
 int	ft_atoi(const char *str)

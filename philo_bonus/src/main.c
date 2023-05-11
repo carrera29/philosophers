@@ -3,91 +3,70 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/24 12:17:37 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/04 12:11:19 by pollo            ###   ########.fr       */
+/*   Updated: 2023/05/11 12:55:34 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void	*monitoring(void *args)
+int	time_to_eat(t_philo *philo)
 {
-	t_data	*data;
-
-	data = (t_data *)args;
-	usleep(500);
-	while (1)
-	{
-		usleep(100);
-		if (kitchen_timer(data) == 1)
-		{
-			data->is_dead = 1;
-			write_msg(data, "died", data->id);
-			exit (1);
-		}
-		if (data->must_eat && data->meals >= data->must_eat)
-			exit (0);
-	}
+	sem_wait(philo->data->forks);
+	write_msg(philo->data, "has taken a fork", philo->id);
+	sem_wait(philo->data->forks);
+	write_msg(philo->data, "has taken a fork", philo->id);
+	if (kitchen_timer(philo->data, philo) != 0)
+		return (1);
+	(write_msg(philo->data, "is eating", philo->id), philo->meals += 1);
+	gettimeofday(&philo->last_meal, NULL);
+	usleep(philo->data->time_to_eat * 1000);
+	sem_post(philo->data->forks);
+	sem_post(philo->data->forks);
+	return (0);
 }
 
-void	time_to_eat(t_data *data)
+void	time_for_lunch(t_data *data, t_philo *philo)
 {
-	sem_wait(data->forks);
-	write_msg(data, "has taken a fork", data->id);
-	sem_wait(data->forks);
-	write_msg(data, "has taken a fork", data->id);
-	(write_msg(data, "is eating", data->id), data->meals++); 
-	gettimeofday(&data->last_meal, NULL);
-	usleep(data->time_to_eat * 1000);
-	(sem_post(data->forks), sem_post(data->forks));
-}
-
-int	time_for_lunch(t_data *data)
-{
-	pthread_t		thread;
-
-	if (data->id % 2 == 1)
+	if (philo->id % 2 == 1)
 		usleep(500);
-	if (pthread_create(&thread, NULL, &monitoring, &data) != 0)
-		return (printf("Error: pthread create\n"), 1);
-	gettimeofday(&data->last_meal, NULL);
+	gettimeofday(&philo->last_meal, NULL);
 	while (1)
 	{
-		time_to_eat(data);
-		write_msg(data, "is sleeping", data->id);
+		if (philo->data->must_eat)
+			if (philo->meals >= philo->data->must_eat)
+				break ;
+		if (time_to_eat(philo) != 0)
+			exit (1);
+		write_msg(data, "is sleeping", philo->id);
 		usleep(data->time_to_sleep * 1000);
-		write_msg(data, "is thinking", data->id);
+		write_msg(data, "is thinking", philo->id);
 	}
+	exit (0);
 }
 
-int	enjoy_dinner(t_data *data)
+int	enjoy_dinner(t_data *data, t_philo *philo)
 {
-	int		i;
-	int		status;
-	pid_t	*pid;
+	int	i;
+	int	status;
 
-	pid = malloc(sizeof(pid_t) * data->philosophers);
-	if (!pid)
-		return (printf("Error: malloc\n"), end_program(data), 1);
 	i = -1;
 	while (++i < data->philosophers)
 	{
-		pid[i] = fork();
-		if (pid[i] == -1)
-			return (printf("Error: fork\n"), end_program(data), 1);
-		else if (!pid[i])
-			(data->id = i, time_for_lunch(data));
+		philo[i].pid = fork();
+		if (philo[i].pid < 0)
+			return (printf("Error: malloc\n"), end_program(data), 1);
+		else if (philo[i].pid == 0)
+			time_for_lunch(data, &philo[i]);
 	}
-	while (1)
+	i = -1;
+	while (++i < data->philosophers)
 	{
 		waitpid(-1, &status, 0);
-		if (WEXITSTATUS(status) != 0)
-		{
-			kill_the_chld(data, pid);
-			break ;
-		}
+		if (status != 0)
+			return (kill_the_child(philo), 0);
 	}
 	return (0);
 }
@@ -95,13 +74,20 @@ int	enjoy_dinner(t_data *data)
 int	main(int argc, char **argv)
 {
 	t_data	data;
+	t_philo	*philo;
 
 	if (argc == 5 || argc == 6)
 	{
+		philo = NULL;
 		memset(&data, 0, sizeof(data));
 		if (set_the_table(&data, argv) != 0)
 			return (1);
-		if (enjoy_dinner(&data) != 0)
+		philo = philo_init(&data, philo);
+		if (!philo)
+			return (1);
+		if (sem_initialization(&data) != 0)
+			return (1);
+		if (enjoy_dinner(&data, philo) != 0)
 			return (1);
 		end_program(&data);
 	}
