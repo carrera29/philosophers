@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:39:52 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/11 16:11:53 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/05/12 10:37:38 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,30 +25,27 @@ int	big_brother(t_data *data)
 		{
 			usleep(100);
 			p = &(data->philo[i]);
-			if (kitchen_timer(p) == 1 || data->is_dead)
+			if (kitchen_timer(p) == 1)
 				return (data->is_dead = 1, 0);
-			if (data->must_eat)
-				if (p->meals >= data->must_eat)
-					p->stop = 1;
 		}
 	}
 	return (0);
 }
 
-void	time_to_eat(t_philosopher *p)
+int	time_to_eat(t_philosopher *p)
 {
-	t_data	*d;
-
-	d = p->data;
-	pthread_mutex_lock(&d->mutex[p->left_fork]);
+	pthread_mutex_lock(&p->data->mutex[p->left_fork]);
 	write_msg(p->data, "has taken the left fork", p->id);
-	pthread_mutex_lock(&d->mutex[p->right_fork]);
+	pthread_mutex_lock(&p->data->mutex[p->right_fork]);
 	write_msg(p->data, "has taken the right fork", p->id);
+	if (p->data->is_dead)
+		return (1);
 	(write_msg(p->data, "is eating", p->id), p->meals++);
 	p->last_meal = timer_catch();
-	usleep(d->time_to_eat * 1000);
-	pthread_mutex_unlock(&d->mutex[p->left_fork]);
-	pthread_mutex_unlock(&d->mutex[p->right_fork]);
+	mini_naps(p->data->time_to_eat);
+	pthread_mutex_unlock(&p->data->mutex[p->left_fork]);
+	pthread_mutex_unlock(&p->data->mutex[p->right_fork]);
+	return (0);
 }
 
 void	*philosopher(void *philo)
@@ -59,11 +56,15 @@ void	*philosopher(void *philo)
 	if (p->id % 2 == 1)
 		usleep(500);
 	p->last_meal = timer_catch();
-	while (!p->data->is_dead && !p->stop)
+	while (!p->data->is_dead)
 	{
-		time_to_eat(p);
+		if (time_to_eat(p) != 0)
+			break ;
+		if (p->data->must_eat)
+			if (p->meals >= p->data->must_eat)
+				break ;
 		write_msg(p->data, "is sleeping", p->id);
-		usleep(p->data->time_to_sleep * 1000);
+		mini_naps(p->data->time_to_sleep);
 		write_msg(p->data, "is thinking", p->id);
 	}
 	exit (0);

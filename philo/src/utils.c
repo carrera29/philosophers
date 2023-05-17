@@ -3,14 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:40:02 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/11 15:28:49 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/05/12 10:02:43 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	mini_naps(int sleeping_time)
+{
+	long	exp;
+
+	exp = timer_catch() + sleeping_time;
+	while (exp >  timer_catch())
+		usleep(200);
+}
 
 long	timer_catch(void)
 {

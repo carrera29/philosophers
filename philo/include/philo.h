@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/10 09:24:21 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/11 16:03:54 by clcarrer         ###   ########.fr       */
+/*   Updated: 2023/05/12 10:34:42 by pollo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ int		error_check(t_data *data, char *fnc, int code);
 int		set_the_table(t_data *data, char **argv);
 
 // utils
+void	mini_naps(int sleeping_time);
 long	timer_catch(void);
 int		kitchen_timer(t_philosopher *p);
 int		write_msg(t_data *data, char *s, int n_philo);
