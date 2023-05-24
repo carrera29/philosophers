@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pollo <pollo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: clcarrer <clcarrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 11:39:52 by clcarrer          #+#    #+#             */
-/*   Updated: 2023/05/12 10:37:38 by pollo            ###   ########.fr       */
+/*   Updated: 2023/05/17 09:21:17 by clcarrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@ int	big_brother(t_data *data)
 			p = &(data->philo[i]);
 			if (kitchen_timer(p) == 1)
 				return (data->is_dead = 1, 0);
+			if (p->data->must_eat)
+				if (p->meals >= p->data->must_eat)
+					p->stop += 1;
 		}
 	}
 	return (0);
@@ -56,13 +59,10 @@ void	*philosopher(void *philo)
 	if (p->id % 2 == 1)
 		usleep(500);
 	p->last_meal = timer_catch();
-	while (!p->data->is_dead)
+	while (!p->data->is_dead && !p->stop)
 	{
 		if (time_to_eat(p) != 0)
 			break ;
-		if (p->data->must_eat)
-			if (p->meals >= p->data->must_eat)
-				break ;
 		write_msg(p->data, "is sleeping", p->id);
 		mini_naps(p->data->time_to_sleep);
 		write_msg(p->data, "is thinking", p->id);
